@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Fanta">
-  <circle cx="120" cy="128" r="98" fill="#F7921E"/>
-  <path fill="#009639" d="M88 42c18-28 52-40 78-22-6 18-24 30-42 34-10-3-24-7-36-12z"/>
-  <path fill="#009639" d="M102 36c8-12 22-18 34-14-3 8-12 14-22 16-4-1-8-1-12-2z"/>
-  <text x="120" y="152" text-anchor="middle" fill="#fff" font-family="Arial Black, Arial, sans-serif" font-size="54" font-weight="900" font-style="italic" letter-spacing="-1">FANTA</text>
-</svg>

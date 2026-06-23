@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 88" role="img" aria-label="Ice Tea">
-  <rect width="260" height="88" rx="10" fill="#F5D000"/>
-  <circle cx="52" cy="44" r="30" fill="#fff" opacity="0.4"/>
-  <path fill="#007A3D" d="M52 18c14-10 32-8 38 10-12 3-22 10-26 22-4-10-8-20-12-32z"/>
-  <path fill="#007A3D" d="M44 24c6-8 16-12 24-8-2 8-10 14-18 16-2-4-4-6-6-8z"/>
-  <text x="96" y="56" fill="#E31837" font-family="Arial Black, Arial, sans-serif" font-size="30" font-weight="900" letter-spacing="2">ICE TEA</text>
-</svg>
