@@ -1,8 +1,8 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { Input, Button } from 'rizzui';
 import { useRegister } from '../context/register.context';
+import { AuthButton, AuthInput } from './auth-field';
 
 interface AccountInfoForm {
   username: string;
@@ -12,7 +12,7 @@ interface AccountInfoForm {
 
 export default function Step2AccountInfo() {
   const { formData, updateFormData, nextStep, prevStep, isStepValid } = useRegister();
-  
+
   const {
     register,
     handleSubmit,
@@ -28,6 +28,27 @@ export default function Step2AccountInfo() {
 
   const watchedPassword = watch('password');
 
+  const usernameReg = register('username', {
+    required: 'Kullanıcı adı zorunludur',
+    minLength: { value: 3, message: 'Kullanıcı adı en az 3 karakter olmalıdır' },
+    pattern: {
+      value: /^[a-zA-Z0-9_]+$/,
+      message: 'Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir',
+    },
+  });
+  const passwordReg = register('password', {
+    required: 'Şifre zorunludur',
+    minLength: { value: 8, message: 'Şifre en az 8 karakter olmalıdır' },
+    pattern: {
+      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      message: 'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir',
+    },
+  });
+  const confirmPasswordReg = register('confirmPassword', {
+    required: 'Şifre tekrarı zorunludur',
+    validate: (value) => value === watchedPassword || 'Şifreler eşleşmiyor',
+  });
+
   const onSubmit = (data: AccountInfoForm) => {
     updateFormData(data);
     nextStep();
@@ -38,75 +59,60 @@ export default function Step2AccountInfo() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Hesap Bilgileri</h2>
-        <p className="text-gray-600 mt-2">Güvenli bir hesap oluşturmak için bilgilerinizi girin</p>
+    <div className="space-y-5">
+      <div>
+        <h2 className="card-title text-gray-900">Hesap Bilgileri</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          Güvenli bir hesap oluşturmak için bilgilerinizi girin
+        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
+        <AuthInput
           label="Kullanıcı Adı"
           placeholder="kullanici_adi"
-          {...register('username', { 
-            required: 'Kullanıcı adı zorunludur',
-            minLength: { value: 3, message: 'Kullanıcı adı en az 3 karakter olmalıdır' },
-            pattern: { 
-              value: /^[a-zA-Z0-9_]+$/,
-              message: 'Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir'
-            }
-          })}
+          {...usernameReg}
           error={errors.username?.message}
-          onChange={(e) => handleInputChange('username', e.target.value)}
+          onChange={(e) => {
+            usernameReg.onChange(e);
+            handleInputChange('username', e.target.value);
+          }}
         />
 
-        <Input
+        <AuthInput
           label="Şifre"
-          type="text"
+          type="password"
           placeholder="••••••••"
-          {...register('password', { 
-            required: 'Şifre zorunludur',
-            minLength: { value: 8, message: 'Şifre en az 8 karakter olmalıdır' },
-            pattern: { 
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-              message: 'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir'
-            }
-          })}
+          {...passwordReg}
           error={errors.password?.message}
-          onChange={(e) => handleInputChange('password', e.target.value)}
+          hint="En az 8 karakter, büyük/küçük harf ve rakam içermelidir."
+          onChange={(e) => {
+            passwordReg.onChange(e);
+            handleInputChange('password', e.target.value);
+          }}
         />
 
-        <Input
+        <AuthInput
           label="Şifre Tekrar"
-          type="text"
+          type="password"
           placeholder="••••••••"
-          {...register('confirmPassword', { 
-            required: 'Şifre tekrarı zorunludur',
-            validate: (value) => value === watchedPassword || 'Şifreler eşleşmiyor'
-          })}
+          {...confirmPasswordReg}
           error={errors.confirmPassword?.message}
-          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+          onChange={(e) => {
+            confirmPasswordReg.onChange(e);
+            handleInputChange('confirmPassword', e.target.value);
+          }}
         />
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={prevStep}
-          >
+        <div className="flex gap-3 pt-1">
+          <AuthButton type="button" variant="secondary" className="flex-1" onClick={prevStep}>
             Geri
-          </Button>
-          
-          <Button
-            type="submit"
-            className="flex-1"
-            disabled={!isStepValid(2)}
-          >
+          </AuthButton>
+          <AuthButton type="submit" className="flex-1" disabled={!isStepValid(2)}>
             Devam Et
-          </Button>
+          </AuthButton>
         </div>
       </form>
     </div>
   );
-} 
+}

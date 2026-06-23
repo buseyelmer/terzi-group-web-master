@@ -1,8 +1,8 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { Input, Button } from 'rizzui';
 import { useRegister } from '../context/register.context';
+import { AuthButton, AuthInput } from './auth-field';
 
 interface AddressInfoForm {
   address: string;
@@ -13,7 +13,7 @@ interface AddressInfoForm {
 
 export default function Step3AddressInfo() {
   const { formData, updateFormData, nextStep, prevStep, isStepValid } = useRegister();
-  
+
   const {
     register,
     handleSubmit,
@@ -36,81 +36,90 @@ export default function Step3AddressInfo() {
     updateFormData({ [field]: value });
   };
 
+  const addressReg = register('address', {
+    required: 'Adres alanı zorunludur',
+    minLength: { value: 10, message: 'Adres en az 10 karakter olmalıdır' },
+  });
+  const cityReg = register('city', {
+    required: 'Şehir alanı zorunludur',
+    minLength: { value: 2, message: 'Şehir en az 2 karakter olmalıdır' },
+  });
+  const countryReg = register('country', {
+    required: 'Ülke alanı zorunludur',
+    minLength: { value: 2, message: 'Ülke en az 2 karakter olmalıdır' },
+  });
+  const postalCodeReg = register('postalCode', {
+    pattern: {
+      value: /^[0-9]{5}$/,
+      message: 'Geçerli bir posta kodu girin (5 haneli)',
+    },
+  });
+
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Adres Bilgileri</h2>
-        <p className="text-gray-600 mt-2">Teslimat bilgileriniz için adres bilgilerinizi girin</p>
+    <div className="space-y-5">
+      <div>
+        <h2 className="card-title text-gray-900">Adres Bilgileri</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          Teslimat ve fatura için adres bilgilerinizi girin
+        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
+        <AuthInput
           label="Adres"
-          placeholder="Sokak, Mahalle, Bina No"
-          {...register('address', { 
-            required: 'Adres alanı zorunludur',
-            minLength: { value: 10, message: 'Adres en az 10 karakter olmalıdır' }
-          })}
+          placeholder="Sokak, mahalle, bina no"
+          {...addressReg}
           error={errors.address?.message}
-          onChange={(e) => handleInputChange('address', e.target.value)}
+          onChange={(e) => {
+            addressReg.onChange(e);
+            handleInputChange('address', e.target.value);
+          }}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AuthInput
             label="Şehir"
             placeholder="İstanbul"
-            {...register('city', { 
-              required: 'Şehir alanı zorunludur',
-              minLength: { value: 2, message: 'Şehir en az 2 karakter olmalıdır' }
-            })}
+            {...cityReg}
             error={errors.city?.message}
-            onChange={(e) => handleInputChange('city', e.target.value)}
+            onChange={(e) => {
+              cityReg.onChange(e);
+              handleInputChange('city', e.target.value);
+            }}
           />
-          
-          <Input
+
+          <AuthInput
             label="Ülke"
             placeholder="Türkiye"
-            {...register('country', { 
-              required: 'Ülke alanı zorunludur',
-              minLength: { value: 2, message: 'Ülke en az 2 karakter olmalıdır' }
-            })}
+            {...countryReg}
             error={errors.country?.message}
-            onChange={(e) => handleInputChange('country', e.target.value)}
+            onChange={(e) => {
+              countryReg.onChange(e);
+              handleInputChange('country', e.target.value);
+            }}
           />
         </div>
 
-        <Input
+        <AuthInput
           label="Posta Kodu"
           placeholder="34000"
-          {...register('postalCode', { 
-            pattern: { 
-              value: /^[0-9]{5}$/,
-              message: 'Geçerli bir posta kodu girin (5 haneli)'
-            }
-          })}
+          {...postalCodeReg}
           error={errors.postalCode?.message}
-          onChange={(e) => handleInputChange('postalCode', e.target.value)}
+          onChange={(e) => {
+            postalCodeReg.onChange(e);
+            handleInputChange('postalCode', e.target.value);
+          }}
         />
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={prevStep}
-          >
+        <div className="flex gap-3 pt-1">
+          <AuthButton type="button" variant="secondary" className="flex-1" onClick={prevStep}>
             Geri
-          </Button>
-          
-          <Button
-            type="submit"
-            className="flex-1"
-            disabled={!isStepValid(3)}
-          >
+          </AuthButton>
+          <AuthButton type="submit" className="flex-1" disabled={!isStepValid(3)}>
             Devam Et
-          </Button>
+          </AuthButton>
         </div>
       </form>
     </div>
   );
-} 
+}

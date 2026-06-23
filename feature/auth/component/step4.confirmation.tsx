@@ -1,17 +1,21 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { Button, Checkbox } from 'rizzui';
 import { useRegister } from '../context/register.context';
+import { AuthButton, AuthCheckbox } from './auth-field';
 
 interface ConfirmationForm {
   termsAccepted: boolean;
   newsletterSubscription: boolean;
 }
 
-export default function Step4Confirmation() {
+type Step4ConfirmationProps = {
+  onComplete?: () => void;
+};
+
+export default function Step4Confirmation({ onComplete }: Step4ConfirmationProps) {
   const { formData, updateFormData, prevStep, isStepValid } = useRegister();
-  
+
   const {
     register,
     handleSubmit,
@@ -23,11 +27,14 @@ export default function Step4Confirmation() {
     },
   });
 
+  const termsReg = register('termsAccepted', {
+    required: 'Kullanım şartlarını kabul etmelisiniz',
+  });
+  const newsletterReg = register('newsletterSubscription');
+
   const onSubmit = (data: ConfirmationForm) => {
     updateFormData(data);
-    // Burada kayıt işlemi tamamlanacak
-    console.log('Kayıt tamamlandı:', { ...formData, ...data });
-    alert('Kayıt başarıyla tamamlandı!');
+    onComplete?.();
   };
 
   const handleCheckboxChange = (field: keyof ConfirmationForm, value: boolean) => {
@@ -35,74 +42,71 @@ export default function Step4Confirmation() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Son Adım</h2>
-        <p className="text-gray-600 mt-2">Bilgilerinizi kontrol edin ve onaylayın</p>
+    <div className="space-y-5">
+      <div>
+        <h2 className="card-title text-gray-900">Son Adım</h2>
+        <p className="mt-1 text-sm text-gray-500">Bilgilerinizi kontrol edin ve onaylayın</p>
       </div>
 
-      {/* Bilgi Özeti */}
-      <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-        <h3 className="font-semibold text-gray-900">Bilgi Özeti</h3>
-        <div className="grid grid-cols-2 gap-2 text-sm">
+      <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900">Bilgi Özeti</h3>
+        <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
-            <span className="text-gray-600">Ad Soyad:</span>
-            <p className="font-medium">{formData.firstName} {formData.lastName}</p>
-          </div>
-          <div>
-            <span className="text-gray-600">E-posta:</span>
-            <p className="font-medium">{formData.email}</p>
+            <dt className="text-gray-500">Ad Soyad</dt>
+            <dd className="font-medium text-gray-900">
+              {formData.firstName} {formData.lastName}
+            </dd>
           </div>
           <div>
-            <span className="text-gray-600">Kullanıcı Adı:</span>
-            <p className="font-medium">{formData.username}</p>
+            <dt className="text-gray-500">E-posta</dt>
+            <dd className="font-medium text-gray-900">{formData.email}</dd>
           </div>
           <div>
-            <span className="text-gray-600">Telefon:</span>
-            <p className="font-medium">{formData.phone || 'Belirtilmedi'}</p>
+            <dt className="text-gray-500">Kullanıcı Adı</dt>
+            <dd className="font-medium text-gray-900">{formData.username}</dd>
           </div>
-          <div className="col-span-2">
-            <span className="text-gray-600">Adres:</span>
-            <p className="font-medium">{formData.address}, {formData.city}, {formData.country}</p>
+          <div>
+            <dt className="text-gray-500">Telefon</dt>
+            <dd className="font-medium text-gray-900">{formData.phone || 'Belirtilmedi'}</dd>
           </div>
-        </div>
+          <div className="sm:col-span-2">
+            <dt className="text-gray-500">Adres</dt>
+            <dd className="font-medium text-gray-900">
+              {formData.address}, {formData.city}, {formData.country}
+            </dd>
+          </div>
+        </dl>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Checkbox
+        <AuthCheckbox
           label="Kullanım şartlarını ve gizlilik politikasını kabul ediyorum"
-          {...register('termsAccepted', { 
-            required: 'Kullanım şartlarını kabul etmelisiniz'
-          })}
+          {...termsReg}
           error={errors.termsAccepted?.message}
-          onChange={(e) => handleCheckboxChange('termsAccepted', e.target.checked)}
+          onChange={(e) => {
+            termsReg.onChange(e);
+            handleCheckboxChange('termsAccepted', e.target.checked);
+          }}
         />
 
-        <Checkbox
-          label="E-posta ile güncellemeler ve haberler almak istiyorum"
-          {...register('newsletterSubscription')}
-          onChange={(e) => handleCheckboxChange('newsletterSubscription', e.target.checked)}
+        <AuthCheckbox
+          label="E-posta ile güncellemeler ve kampanyalardan haberdar olmak istiyorum"
+          {...newsletterReg}
+          onChange={(e) => {
+            newsletterReg.onChange(e);
+            handleCheckboxChange('newsletterSubscription', e.target.checked);
+          }}
         />
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={prevStep}
-          >
+        <div className="flex gap-3 pt-1">
+          <AuthButton type="button" variant="secondary" className="flex-1" onClick={prevStep}>
             Geri
-          </Button>
-          
-          <Button
-            type="submit"
-            className="flex-1"
-            disabled={!isStepValid(4)}
-          >
+          </AuthButton>
+          <AuthButton type="submit" className="flex-1" disabled={!isStepValid(4)}>
             Kayıt Ol
-          </Button>
+          </AuthButton>
         </div>
       </form>
     </div>
   );
-} 
+}
